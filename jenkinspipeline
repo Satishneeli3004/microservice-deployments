@@ -1,0 +1,187 @@
+pipeline {
+    agent any
+    
+    environment {
+        SCANNER_HOME = tool 'sonar-scanner'
+    }
+    
+    stages {
+        stage('Git_checkout') {
+            steps {
+                git branch: 'latest', url: 'https://github.com/Satishneeli3004/microservice-deployments.git'
+            }
+        }
+        stage('SonarQube') {
+            steps {
+                withSonarQubeEnv('sonar') {
+                    sh ''' $SCANNER_HOME/bin/sonar-scanner -Dsonar.projectKey=10-Tier -Dsonar.projectName=10-Tier -Dsonar.java.binaries=. '''
+                }   
+                
+            }
+        }
+        stage('frontend') {
+            steps {
+                script {
+                    withDockerRegistry(credentialsId: 'password', toolName: 'docker') {
+                        dir('/var/lib/jenkins/workspace/project/src/frontend') {
+                            sh "docker build -t satishneeli3004/frontend:latest ."
+                            sh "docker push satishneeli3004/frontend:latest"
+                            sh "docker rmi satishneeli3004/frontend:latest"
+                        }
+                    }
+                }   
+                
+            }
+        }
+        stage('adservice') {
+            steps {
+                script {
+                    withDockerRegistry(credentialsId: 'password', toolName: 'docker') {
+                        dir('/var/lib/jenkins/workspace/project/src/adservice') {
+                            sh "docker build -t satishneeli3004/adservice:latest ."
+                            sh "docker push satishneeli3004/adservice:latest"
+                            sh "docker rmi satishneeli3004/adservice:latest"
+                        }
+                    }
+                }   
+                
+            }
+        }
+        stage('cartservice') {
+            steps {
+                script {
+                    withDockerRegistry(credentialsId: 'password', toolName: 'docker') {
+                        dir('/var/lib/jenkins/workspace/project/src/cartservice/src') {
+                            sh "docker build -t satishneeli3004/cartservice:latest ."
+                            sh "docker push satishneeli3004/cartservice:latest"
+                            sh "docker rmi satishneeli3004/cartservice:latest"
+                        }
+                    }
+                }   
+                
+            }
+        }
+        stage('productcatalogservice') {
+            steps {
+                script {
+                    withDockerRegistry(credentialsId: 'password', toolName: 'docker') {
+                        dir('/var/lib/jenkins/workspace/project/src/productcatalogservice') {
+                            sh "docker build -t satishneeli3004/productcatalogservice:latest ."
+                            sh "docker push satishneeli3004/productcatalogservice:latest"
+                            sh "docker rmi satishneeli3004/productcatalogservice:latest"
+                        }
+                    }
+                }   
+                
+            }
+        }
+        stage('currrencyservice') {
+            steps {
+                script {
+                    withDockerRegistry(credentialsId: 'password', toolName: 'docker') {
+                        dir('/var/lib/jenkins/workspace/project/src/currencyservice') {
+                            sh "docker build -t satishneeli3004/currencyservice:latest ."
+                            sh "docker push satishneeli3004/currencyservice:latest"
+                            sh "docker rmi satishneeli3004/currencyservice:latest"
+                        }
+                    }
+                }   
+                
+            }
+        }
+        stage('paymentservice') {
+            steps {
+                script {
+                    withDockerRegistry(credentialsId: 'password', toolName: 'docker') {
+                        dir('/var/lib/jenkins/workspace/project/src/paymentservice') {
+                            sh "docker build -t satishneeli3004/paymentservice:latest ."
+                            sh "docker push satishneeli3004/paymentservice:latest"
+                            sh "docker rmi satishneeli3004/paymentservice:latest"  
+                        }
+                    }
+                }   
+                
+            }
+        }
+        stage('shippingserviceservice') {
+            steps {
+                script {
+                    withDockerRegistry(credentialsId: 'password', toolName: 'docker') {
+                        dir('/var/lib/jenkins/workspace/project/src/shippingservice') {
+                            sh "docker build -t satishneeli3004/shippingservice:latest ."
+                            sh "docker push satishneeli3004/shippingservice:latest"
+                            sh "docker rmi satishneeli3004/shippingservice:latest"
+                        }
+                    }
+                }   
+                
+            }
+        }
+        stage('emailservice') {
+            steps {
+                script {
+                    withDockerRegistry(credentialsId: 'password', toolName: 'docker') {
+                        dir('/var/lib/jenkins/workspace/project/src/emailservice') {
+                            sh "docker build -t satishneeli3004/emailservice:latest ."
+                            sh "docker push satishneeli3004/emailservice:latest"
+                            sh "docker rmi satishneeli3004/emailservice:latest" 
+                        }
+                    }
+                }   
+                
+            }
+        }
+        stage('checkoutservice') {
+            steps {
+                script {
+                    withDockerRegistry(credentialsId: 'password', toolName: 'docker') {
+                        dir('/var/lib/jenkins/workspace/project/src/checkoutservice') {
+                            sh "docker build -t satishneeli3004/checkoutservice:latest ."
+                            sh "docker push satishneeli3004/checkoutservice:latest"
+                            sh "docker rmi satishneeli3004/checkoutservice:latest"
+                        }
+                    }
+                }   
+                
+            }
+        }
+        stage('recommendationservice') {
+            steps {
+                script {
+                    withDockerRegistry(credentialsId: 'password', toolName: 'docker') {
+                        dir('/var/lib/jenkins/workspace/project/src/recommendationservice') {
+                            sh "docker build -t satishneeli3004/recommendationservice:latest ."
+                            sh "docker push satishneeli3004/recommendationservice:latest"
+                            sh "docker rmi satishneeli3004/recommendationservice:latest" 
+                        }
+                    }
+                }   
+                
+            }
+        }
+        stage('loadgenerator') {
+            steps {
+                script {
+                    withDockerRegistry(credentialsId: 'password', toolName: 'docker') {
+                        dir('/var/lib/jenkins/workspace/project/src/loadgenerator') {
+                            sh "docker build -t satishneeli3004/loadgenerator:latest ."
+                            sh "docker push satishneeli3004/loadgenerator:latest"
+                            sh "docker rmi satishneeli3004/loadgenerator:latest"
+                        }
+                    }
+                }   
+                
+            }
+        }
+        stage('k8sDeployement') {
+            steps {
+                withKubeConfig(caCertificate: '', clusterName: 'my-eks8', contextName: '', credentialsId: 'k9s-token', namespace: 'webapps', restrictKubeConfigAccess: false, serverUrl: 'https://B54AB4086DF4843DB9BD4330747D36A8.yl4.ap-south-1.eks.amazonaws.com') {
+                         sh ' kubectl apply -f deployment-service.yml '
+                         sh ' kubectl get pods '
+                         sh ' kubectl get svc '
+                }
+            }
+        }    
+
+    }
+}
