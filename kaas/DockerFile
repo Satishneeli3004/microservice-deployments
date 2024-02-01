@@ -1,0 +1,19 @@
+FROM npm:2.45v
+
+
+WORKDIR /usr/src/app
+
+COPY package*.json ./
+
+RUN npm install --only=production
+RUN apt update -y
+
+COPY --from=builder /usr/src/app/node_modules ./node_modules
+
+COPY . .
+
+EXPOSE 5003
+
+ENTRYPOINT [ "node", "index.js" ]
+CMD ['server.js', 'index.js', 'npm start']
+
